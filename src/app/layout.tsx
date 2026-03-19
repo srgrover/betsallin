@@ -4,8 +4,11 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { SessionProvider } from "next-auth/react";
 import { auth } from "../../auth";
+import { TooltipProvider } from "@/components/ui/tooltip"
+import { AppSidebar } from "@/components/app-sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 
-const raleway = Raleway({subsets:['latin'],variable:'--font-sans'});
+const raleway = Raleway({ subsets: ['latin'], variable: '--font-sans' });
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -25,7 +28,18 @@ export default async function RootLayout({
         className={`${raleway.variable} ${raleway.variable} antialiased`}
       >
         <SessionProvider session={session}>
-          {children}
+          <TooltipProvider>
+            <SidebarProvider className="flex flex-col">
+              <main className="min-h-screen flex flex-1">
+                {
+                  session && session.user && <AppSidebar user={session.user} />
+                }
+                <div className="w-full flex-1 overflow-y-auto">
+                  {children}
+                </div>
+              </main>
+            </SidebarProvider>
+          </TooltipProvider>
         </SessionProvider>
       </body>
     </html>
