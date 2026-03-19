@@ -18,6 +18,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const session = await auth()
+  console.log('session layout general: ', session)
   return (
     <html lang="en" className={cn("font-sans", raleway.variable)}>
       <body

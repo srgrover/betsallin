@@ -4,37 +4,34 @@ import Github from "next-auth/providers/github"
 import Google from "next-auth/providers/google"
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  debug: !!process.env.AUTH_DEBUG,
+  debug: process.env.AUTH_DEBUG === 'true', // Activamos debug para ver qué pasa en consola
   theme: { logo: "https://authjs.dev/img/logo-sm.png" },
   providers: [
     Github({
-        clientId: process.env.GITHUB_ID ?? '',
-        clientSecret: process.env.GITHUB_SECRET ?? '',
+        clientId: process.env.AUTH_GITHUB_ID!,
+        clientSecret: process.env.AUTH_GITHUB_SECRET!,
     }),
     Google({
-        clientId: process.env.GOOGLE_CLIENT_ID ?? '',
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? ''
+        clientId: process.env.AUTH_GOOGLE_ID!,
+        clientSecret: process.env.AUTH_GOOGLE_SECRET!
     }),
   ],
   session: { strategy: "jwt" },
-//   authorized({ request, auth }) {
-//       const { pathname } = request.nextUrl
-//       if (pathname === "/middleware-example") return !!auth
-//       return true
-//   },
   callbacks: {
+    async signIn({ user, account, profile }) {
+      // AQUÍ PUEDES CAPTURAR AL USUARIO AL INICIAR SESIÓN
+      console.log('--- SIGN IN CALLBACK ---')
+      console.log('User logged in:', user.email)
+      
+      // Puedes poner lógica aquí para validar algo del usuario
+      // Si devuelves false, el login se cancela y se redirige a error
+      return true
+    },
     async jwt({ token, trigger, session, account, user }) {
-      if (user) { // user is only available on first sign in
-        try {
-          // TODO: Set correct ID for user from DB
-          // const responseUser = await getUserByEmail(user);
-
-          // if (responseUser.ok && responseUser.user) {
-          //   token.id = responseUser.user.id;
-          // }
-        } catch (error) {
-            console.error('Error adding id to token: ', error)
-        }
+      if (user) {
+        // En el primer login el objeto 'user' viene lleno
+        // Puedes pasar datos al token para que estén disponibles en la sesión
+        token.id = user.id
       }
       if (trigger === "update") token.name = session.user.name
       if (account?.provider === "keycloak") {
@@ -43,22 +40,32 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return token
     },
     async session({ session, token }) {
-      if (token?.accessToken) session.accessToken = token.accessToken
+      // Pasamos el ID del token a la sesión
+      if (session.user) {
+        session.user.id = token.id as string
+      }
+      if (token?.accessToken) session.accessToken = token.accessToken as string
 
       return session
     },
   },
-//   experimental: { enableWebAuthn: true },
 })
 
 declare module "next-auth" {
   interface Session {
+    user: {
+      id?: string
+      name?: string | null
+      email?: string | null
+      image?: string | null
+    }
     accessToken?: string
   }
 }
 
 declare module "next-auth/jwt" {
   interface JWT {
+    id?: string
     accessToken?: string
   }
 }
