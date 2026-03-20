@@ -21,22 +21,22 @@ const data = {
     {
       title: "Events",
       url: "#",
-      icon: (<IconFlag2Filled />),
+      icon: <IconFlag2Filled />,
       isActive: true,
       items: [
         {
           title: "Football",
-          icon: (<IconBallFootball />),
+          icon: <IconBallFootball />,
           url: "#",
         },
         {
           title: "Basketball",
-          icon: (<IconBallBasketball />),
+          icon: <IconBallBasketball />,
           url: "#",
         },
         {
           title: "Tennis",
-          icon: (<IconBallTennis />),
+          icon: <IconBallTennis />,
           url: "#",
         },
       ],
@@ -44,10 +44,7 @@ const data = {
     {
       title: "Models",
       url: "#",
-      icon: (
-        <IconRobot
-        />
-      ),
+      icon: <IconRobot />,
       items: [
         {
           title: "Genesis",
@@ -66,10 +63,7 @@ const data = {
     {
       title: "Documentation",
       url: "#",
-      icon: (
-        <IconBook
-        />
-      ),
+      icon: <IconBook />,
       items: [
         {
           title: "Introduction",
@@ -92,10 +86,7 @@ const data = {
     {
       title: "Settings",
       url: "#",
-      icon: (
-        <IconSettings
-        />
-      ),
+      icon: <IconSettings />,
       items: [
         {
           title: "General",
@@ -121,43 +112,30 @@ const data = {
       title: "Coins",
       value: 34.584,
       color: "primary",
-      icon: (
-        <IconCoinFilled size={20} />
-      ),
+      icon: <IconCoinFilled size={20} />,
     },
     {
       title: "Pendings",
       value: 2.732,
       color: "secondary",
-      icon: (
-        <IconClockDollar size={20} />
-      ),
+      icon: <IconClockDollar size={20} />,
     },
   ],
   projects: [
     {
       name: "Design Engineering",
       url: "#",
-      icon: (
-        <IconFrame
-        />
-      ),
+      icon: <IconFrame />,
     },
     {
       name: "Sales & Marketing",
       url: "#",
-      icon: (
-        <IconChartPie
-        />
-      ),
+      icon: <IconChartPie />,
     },
     {
       name: "Travel",
       url: "#",
-      icon: (
-        <IconMap
-        />
-      ),
+      icon: <IconMap />,
     },
   ],
 }
@@ -169,7 +147,7 @@ interface Props {
 export function AppSidebar({ user }: Props) {
   return (
     <Sidebar
-      className="top-(--header-height) h-[calc(100svh-var(--header-height))]!"
+      className="top-(--header-height) h-full!"
     >
       <SidebarHeader>
         <SidebarMenu>
