@@ -9,14 +9,16 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import { Label } from "./ui/label"
 
 export function NavSecondary({
   items,
   ...props
 }: {
   items: {
-    title: string
-    url: string
+    title: string,
+    value: number,
+    color: string,
     icon: React.ReactNode
   }[]
 } & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
@@ -25,14 +27,19 @@ export function NavSecondary({
       <SidebarGroupContent>
         <SidebarMenu>
           {items.map((item) => (
-            <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton asChild size="sm">
-                <a href={item.url}>
-                  {item.icon}
-                  <span>{item.title}</span>
-                </a>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
+            <Label key={item.title}>
+              {item.icon}
+              <span className="truncate">{item.title}</span>
+              <span className="truncate font-bold text-lg">{item.value}</span>
+              </Label>
+            // <SidebarMenuItem key={item.title}>
+            //   <SidebarMenuButton asChild size="sm">
+            //     <a href={item.url}>
+            //       {item.icon}
+            //       <span>{item.title}</span>
+            //     </a>
+            //   </SidebarMenuButton>
+            // </SidebarMenuItem>
           ))}
         </SidebarMenu>
       </SidebarGroupContent>

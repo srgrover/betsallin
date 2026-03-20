@@ -13,30 +13,30 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { IconTerminal2, IconRobot, IconBook, IconSettings, IconLifebuoy, IconSend, IconFrame, IconChartPie, IconMap, IconBallFootball } from "@tabler/icons-react"
+import { IconRobot, IconBook, IconSettings, IconFrame, IconChartPie, IconMap, IconBallFootball, IconCoinFilled, IconClockDollar, IconFlag2Filled, IconBallTennis, IconBallBasketball } from "@tabler/icons-react"
 import { User } from "next-auth"
 
 const data = {
   navMain: [
     {
-      title: "Playground",
+      title: "Events",
       url: "#",
-      icon: (
-        <IconTerminal2
-        />
-      ),
+      icon: (<IconFlag2Filled />),
       isActive: true,
       items: [
         {
-          title: "History",
+          title: "Football",
+          icon: (<IconBallFootball />),
           url: "#",
         },
         {
-          title: "Starred",
+          title: "Basketball",
+          icon: (<IconBallBasketball />),
           url: "#",
         },
         {
-          title: "Settings",
+          title: "Tennis",
+          icon: (<IconBallTennis />),
           url: "#",
         },
       ],
@@ -118,19 +118,19 @@ const data = {
   ],
   navSecondary: [
     {
-      title: "Support",
-      url: "#",
+      title: "Coins",
+      value: 34.584,
+      color: "primary",
       icon: (
-        <IconLifebuoy
-        />
+        <IconCoinFilled size={20} />
       ),
     },
     {
-      title: "Feedback",
-      url: "#",
+      title: "Pendings",
+      value: 2.732,
+      color: "secondary",
       icon: (
-        <IconSend
-        />
+        <IconClockDollar size={20} />
       ),
     },
   ],
