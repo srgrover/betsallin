@@ -28,7 +28,7 @@ export function NavMain({
     isActive?: boolean
     items?: {
       title: string,
-      icon: React.ReactNode
+      icon?: React.ReactNode
       url: string
     }[]
   }[]
