@@ -13,7 +13,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { IconTerminal2, IconRobot, IconBook, IconSettings, IconLifebuoy, IconSend, IconFrame, IconChartPie, IconMap, IconBallFootball } from "@tabler/icons-react"
+import { IconTerminal2, IconRobot, IconBook, IconSettings, IconLifebuoy, IconSend, IconFrame, IconChartPie, IconMap, IconBallFootball, IconLogin } from "@tabler/icons-react"
 import { User } from "next-auth"
 
 const data = {
@@ -160,16 +160,26 @@ const data = {
       ),
     },
   ],
+  navAuth: [
+    {
+      title: "Sign In",
+      url: "/login",
+      icon: (
+        <IconLogin
+        />
+      ),
+    },
+  ],
 }
 
 interface Props {
-  user: User
+  user?: User
 }
 
 export function AppSidebar({ user }: Props) {
   return (
     <Sidebar
-      className="top-(--header-height) h-[calc(100svh-var(--header-height))]!"
+      className="top-(--header-height) h-full!"
     >
       <SidebarHeader>
         <SidebarMenu>
@@ -188,14 +198,24 @@ export function AppSidebar({ user }: Props) {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
-      </SidebarContent>
-      <SidebarFooter>
-        <NavUser user={ user } />
-      </SidebarFooter>
+      {
+        user ? (
+          <SidebarContent>
+            <NavMain items={data.navMain} />
+            <NavProjects projects={data.projects} />
+            <NavSecondary items={data.navSecondary} className="mt-auto" />
+          </SidebarContent>
+        ) : (
+          <SidebarContent>
+            <NavMain items={data.navAuth} />
+          </SidebarContent>
+        )
+      }
+      {user && (
+        <SidebarFooter>
+          <NavUser user={user} />
+        </SidebarFooter>
+      )}
     </Sidebar>
   )
 }

@@ -31,9 +31,7 @@ export default async function RootLayout({
           <TooltipProvider>
             <SidebarProvider className="flex flex-col">
               <main className="min-h-screen flex flex-1">
-                {
-                  session && session.user && <AppSidebar user={session.user} />
-                }
+                <AppSidebar user={session?.user} />
                 <div className="w-full flex-1 overflow-y-auto">
                   {children}
                 </div>
