@@ -94,12 +94,6 @@ importers:
         specifier: ^5
         version: 5.9.3
 
-  src/generated/prisma:
-    dependencies:
-      '@prisma/client-runtime-utils':
-        specifier: 7.5.0
-        version: 7.5.0
-
 packages:
 
   '@alloc/quick-lru@5.2.0':
