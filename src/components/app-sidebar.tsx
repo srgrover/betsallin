@@ -13,30 +13,31 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { IconTerminal2, IconRobot, IconBook, IconSettings, IconLifebuoy, IconSend, IconFrame, IconChartPie, IconMap, IconBallFootball, IconLogin } from "@tabler/icons-react"
+import { IconRobot, IconBook, IconSettings, IconFrame, IconChartPie, IconMap, IconBallFootball, IconCoinFilled, IconClockDollar, IconFlag2Filled, IconBallTennis, IconBallBasketball } from "@tabler/icons-react"
+
 import { User } from "next-auth"
 
 const data = {
   navMain: [
     {
-      title: "Playground",
+      title: "Events",
       url: "#",
-      icon: (
-        <IconTerminal2
-        />
-      ),
+      icon: <IconFlag2Filled />,
       isActive: true,
       items: [
         {
-          title: "History",
+          title: "Football",
+          icon: <IconBallFootball />,
           url: "#",
         },
         {
-          title: "Starred",
+          title: "Basketball",
+          icon: <IconBallBasketball />,
           url: "#",
         },
         {
-          title: "Settings",
+          title: "Tennis",
+          icon: <IconBallTennis />,
           url: "#",
         },
       ],
@@ -44,10 +45,7 @@ const data = {
     {
       title: "Models",
       url: "#",
-      icon: (
-        <IconRobot
-        />
-      ),
+      icon: <IconRobot />,
       items: [
         {
           title: "Genesis",
@@ -66,10 +64,7 @@ const data = {
     {
       title: "Documentation",
       url: "#",
-      icon: (
-        <IconBook
-        />
-      ),
+      icon: <IconBook />,
       items: [
         {
           title: "Introduction",
@@ -92,10 +87,7 @@ const data = {
     {
       title: "Settings",
       url: "#",
-      icon: (
-        <IconSettings
-        />
-      ),
+      icon: <IconSettings />,
       items: [
         {
           title: "General",
@@ -118,46 +110,33 @@ const data = {
   ],
   navSecondary: [
     {
-      title: "Support",
-      url: "#",
-      icon: (
-        <IconLifebuoy
-        />
-      ),
+      title: "Coins",
+      value: 34.584,
+      color: "primary",
+      icon: <IconCoinFilled size={20} />,
     },
     {
-      title: "Feedback",
-      url: "#",
-      icon: (
-        <IconSend
-        />
-      ),
+      title: "Pendings",
+      value: 2.732,
+      color: "secondary",
+      icon: <IconClockDollar size={20} />,
     },
   ],
   projects: [
     {
       name: "Design Engineering",
       url: "#",
-      icon: (
-        <IconFrame
-        />
-      ),
+      icon: <IconFrame />,
     },
     {
       name: "Sales & Marketing",
       url: "#",
-      icon: (
-        <IconChartPie
-        />
-      ),
+      icon: <IconChartPie />,
     },
     {
       name: "Travel",
       url: "#",
-      icon: (
-        <IconMap
-        />
-      ),
+      icon: <IconMap />,
     },
   ],
   navAuth: [

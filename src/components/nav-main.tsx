@@ -27,7 +27,8 @@ export function NavMain({
     icon: React.ReactNode
     isActive?: boolean
     items?: {
-      title: string
+      title: string,
+      icon?: React.ReactNode
       url: string
     }[]
   }[]
@@ -60,6 +61,7 @@ export function NavMain({
                         <SidebarMenuSubItem key={subItem.title}>
                           <SidebarMenuSubButton asChild>
                             <a href={subItem.url}>
+                              {subItem.icon}
                               <span>{subItem.title}</span>
                             </a>
                           </SidebarMenuSubButton>
