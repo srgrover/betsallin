@@ -14,6 +14,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { IconRobot, IconBook, IconSettings, IconFrame, IconChartPie, IconMap, IconBallFootball, IconCoinFilled, IconClockDollar, IconFlag2Filled, IconBallTennis, IconBallBasketball } from "@tabler/icons-react"
+
 import { User } from "next-auth"
 
 const data = {
@@ -138,10 +139,20 @@ const data = {
       icon: <IconMap />,
     },
   ],
+  navAuth: [
+    {
+      title: "Sign In",
+      url: "/login",
+      icon: (
+        <IconLogin
+        />
+      ),
+    },
+  ],
 }
 
 interface Props {
-  user: User
+  user?: User
 }
 
 export function AppSidebar({ user }: Props) {
@@ -166,14 +177,24 @@ export function AppSidebar({ user }: Props) {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
-      </SidebarContent>
-      <SidebarFooter>
-        <NavUser user={ user } />
-      </SidebarFooter>
+      {
+        user ? (
+          <SidebarContent>
+            <NavMain items={data.navMain} />
+            <NavProjects projects={data.projects} />
+            <NavSecondary items={data.navSecondary} className="mt-auto" />
+          </SidebarContent>
+        ) : (
+          <SidebarContent>
+            <NavMain items={data.navAuth} />
+          </SidebarContent>
+        )
+      }
+      {user && (
+        <SidebarFooter>
+          <NavUser user={user} />
+        </SidebarFooter>
+      )}
     </Sidebar>
   )
 }
