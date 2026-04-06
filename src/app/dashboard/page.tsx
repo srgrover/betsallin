@@ -1,18 +1,22 @@
 import { AppSidebar } from "@/components/app-sidebar"
 import { SiteHeader } from "@/components/site-header"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
+import { auth } from "@auth"
 
 export const iframeHeight = "800px"
 
 export const description = "A sidebar with a header and a search form."
 
-export default function Page() {
+export default async function Page() {
+  const session = await auth()
+  const user = session?.user
+  if (!user) return null
   return (
     <div className="[--header-height:calc(--spacing(14))]">
       <SidebarProvider className="flex flex-col">
         <SiteHeader />
         <div className="flex flex-1">
-          <AppSidebar />
+          <AppSidebar user={user} />
           <SidebarInset>
             <div className="flex flex-1 flex-col gap-4 p-4">
               <div className="grid auto-rows-min gap-4 md:grid-cols-3">
