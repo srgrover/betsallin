@@ -8,13 +8,21 @@ import { PrismaClient } from "@prisma/client";
 
 const { Pool } = pg;
 const rawConnectionString = process.env.DATABASE_URL;
-const connectionString = rawConnectionString?.replace("sslmode=require", "sslmode=no-verify");
+const connectionString = rawConnectionString?.replace(
+  "sslmode=require",
+  "sslmode=no-verify",
+);
 
 if (!connectionString) {
   console.warn("WARNING [PRISMA_INIT]: DATABASE_URL is not defined.");
 } else {
-  console.log("LOG [PRISMA_INIT]: Initializing prisma with direct DATABASE_URL.");
-  console.log("LOG [PRISMA_INIT]: NODE_TLS_REJECT_UNAUTHORIZED =", process.env.NODE_TLS_REJECT_UNAUTHORIZED);
+  console.log(
+    "LOG [PRISMA_INIT]: Initializing prisma with direct DATABASE_URL.",
+  );
+  console.log(
+    "LOG [PRISMA_INIT]: NODE_TLS_REJECT_UNAUTHORIZED =",
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED,
+  );
 }
 
 const pool = new Pool({
