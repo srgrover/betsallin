@@ -13,7 +13,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { IconRobot, IconBook, IconSettings, IconFrame, IconChartPie, IconMap, IconBallFootball, IconCoinFilled, IconClockDollar, IconFlag2Filled, IconBallTennis, IconBallBasketball } from "@tabler/icons-react"
+import { IconRobot, IconBook, IconSettings, IconFrame, IconChartPie, IconMap, IconBallFootball, IconCoinFilled, IconClockDollar, IconFlag2Filled, IconBallTennis, IconBallBasketball, IconLogin } from "@tabler/icons-react"
 
 import { User } from "next-auth"
 
