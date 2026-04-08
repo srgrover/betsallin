@@ -1,9 +1,10 @@
-"use client"
+"use client";
 
-import { NavMain } from "@/components/nav-main"
-import { NavProjects } from "@/components/nav-projects"
-import { NavSecondary } from "@/components/nav-secondary"
-import { NavUser } from "@/components/nav-user"
+import { IUser } from "@/app/interfaces/user.interface";
+import { NavMain } from "@/components/nav-main";
+import { NavProjects } from "@/components/nav-projects";
+import { NavSecondary } from "@/components/nav-secondary";
+import { NavUser } from "@/components/nav-user";
 import {
   Sidebar,
   SidebarContent,
@@ -12,10 +13,24 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
-import { IconRobot, IconBook, IconSettings, IconFrame, IconChartPie, IconMap, IconBallFootball, IconCoinFilled, IconClockDollar, IconFlag2Filled, IconBallTennis, IconBallBasketball, IconLogin } from "@tabler/icons-react"
+} from "@/components/ui/sidebar";
+import {
+  IconRobot,
+  IconBook,
+  IconSettings,
+  IconFrame,
+  IconChartPie,
+  IconMap,
+  IconBallFootball,
+  IconCoinFilled,
+  IconClockDollar,
+  IconFlag2Filled,
+  IconBallTennis,
+  IconBallBasketball,
+  IconLogin,
+} from "@tabler/icons-react";
 
-import { User } from "next-auth"
+import { User } from "next-auth";
 
 const data = {
   navMain: [
@@ -143,23 +158,18 @@ const data = {
     {
       title: "Sign In",
       url: "/login",
-      icon: (
-        <IconLogin
-        />
-      ),
+      icon: <IconLogin />,
     },
   ],
-}
+};
 
 interface Props {
-  user?: User
+  user?: IUser;
 }
 
 export function AppSidebar({ user }: Props) {
   return (
-    <Sidebar
-      className="top-(--header-height) h-full!"
-    >
+    <Sidebar className="top-(--header-height) h-full!">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -177,24 +187,22 @@ export function AppSidebar({ user }: Props) {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      {
-        user ? (
-          <SidebarContent>
-            <NavMain items={data.navMain} />
-            <NavProjects projects={data.projects} />
-            <NavSecondary items={data.navSecondary} className="mt-auto" />
-          </SidebarContent>
-        ) : (
-          <SidebarContent>
-            <NavMain items={data.navAuth} />
-          </SidebarContent>
-        )
-      }
+      {user ? (
+        <SidebarContent>
+          <NavMain items={data.navMain} />
+          <NavProjects projects={data.projects} />
+          <NavSecondary items={data.navSecondary} className="mt-auto" />
+        </SidebarContent>
+      ) : (
+        <SidebarContent>
+          <NavMain items={data.navAuth} />
+        </SidebarContent>
+      )}
       {user && (
         <SidebarFooter>
           <NavUser user={user} />
         </SidebarFooter>
       )}
     </Sidebar>
-  )
+  );
 }
