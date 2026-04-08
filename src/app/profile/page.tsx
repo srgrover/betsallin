@@ -22,6 +22,7 @@ import {
 } from "@tabler/icons-react";
 import { auth } from "@auth";
 import { getUserByEmail } from "@/actions";
+import Link from "next/link";
 
 const permissions = [
   {
@@ -106,10 +107,12 @@ export default async function UserPermissions() {
             </div>
           </div>
           {userSession!.id === user!.id ? (
-            <Button>
-              <IconPencil className="mr-2 size-4" />
-              Edit Profile
-            </Button>
+            <Link href="/profile/edit">
+              <Button>
+                <IconPencil className="mr-2 size-4" />
+                Edit Profile
+              </Button>
+            </Link>
           ) : (
             <Button variant="default">
               <IconUser className="mr-2 size-4" />

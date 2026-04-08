@@ -1,5 +1,6 @@
 "use server";
 
+import { IUser } from "@/app/interfaces/user.interface";
 import { prisma } from "@/lib";
 
 export const getUserByEmail = async (email: string) => {
@@ -13,10 +14,9 @@ export const getUserByEmail = async (email: string) => {
   const userFound = await prisma.user.findUnique({
     where: { email },
   });
-  console.log("userFound", userFound);
 
   return {
     ok: true,
-    user: userFound,
+    user: userFound as IUser,
   };
 };
