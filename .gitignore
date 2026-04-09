@@ -36,8 +36,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# git credentials
+.git-credentials-bets
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-
-
