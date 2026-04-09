@@ -23,6 +23,7 @@ model User {
   coinsPending  Int       @default(0)
   level         Int       @default(0)
   exp           Int       @default(0)
+  role          String    @default("USER")
   // posts         Post[]
   accounts      Account[]
   sessions      Session[]
