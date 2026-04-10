@@ -27,6 +27,7 @@ export default async function RootLayout({
   let userData: IUser | null = null;
 
   if (userSession) {
+    console.log(userSession);
     const { user, ok, message } = await getUserByEmail(userSession.email!);
     if (ok) {
       userData = user as IUser;

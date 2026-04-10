@@ -5,116 +5,81 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
+  IconChevronCompactRight,
+  IconCircleDashedCheck,
   IconImageGeneration,
+  IconMail,
+  IconShieldExclamation,
   IconTrash,
   IconUpload,
 } from "@tabler/icons-react";
 import { useSession } from "next-auth/react";
 import { IUser } from "@/app/interfaces/user.interface";
 import { getUserByEmail } from "@/actions";
-
-const countries = [
-  {
-    value: "india",
-    label: "India",
-    flag: "https://cdn.shadcnstudio.com/ss-assets/flags/india.png",
-  },
-  {
-    value: "china",
-    label: "China",
-    flag: "https://cdn.shadcnstudio.com/ss-assets/flags/china.png",
-  },
-  {
-    value: "monaco",
-    label: "Monaco",
-    flag: "https://cdn.shadcnstudio.com/ss-assets/flags/monaco.png",
-  },
-  {
-    value: "serbia",
-    label: "Serbia",
-    flag: "https://cdn.shadcnstudio.com/ss-assets/flags/serbia.png",
-  },
-  {
-    value: "romania",
-    label: "Romania",
-    flag: "https://cdn.shadcnstudio.com/ss-assets/flags/romania.png",
-  },
-  {
-    value: "mayotte",
-    label: "Mayotte",
-    flag: "https://cdn.shadcnstudio.com/ss-assets/flags/mayotte.png",
-  },
-  {
-    value: "iraq",
-    label: "Iraq",
-    flag: "https://cdn.shadcnstudio.com/ss-assets/flags/iraq.png",
-  },
-  {
-    value: "syria",
-    label: "Syria",
-    flag: "https://cdn.shadcnstudio.com/ss-assets/flags/syria.png",
-  },
-  {
-    value: "korea",
-    label: "Korea",
-    flag: "https://cdn.shadcnstudio.com/ss-assets/flags/korea.png",
-  },
-  {
-    value: "zimbabwe",
-    label: "Zimbabwe",
-    flag: "https://cdn.shadcnstudio.com/ss-assets/flags/zimbabwe.png",
-  },
-];
+import type { z } from "zod";
+import { UpdateProfileSchema } from "@/schemas";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemMedia,
+  ItemTitle,
+} from "./ui/item";
+import { Badge } from "./ui/badge";
 
 const PersonalInfo = () => {
-  const session = useSession();
+  const { data: session } = useSession({
+    required: true,
+  });
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [userData, setUserData] = useState<IUser | null>(null);
 
-  // const updateForm = useForm<z.infer<typeof UpdateProfileSchema>>({
-  //   resolver: zodResolver(UpdateProfileSchema),
-  //   defaultValues: {
-  //     name: userData?.name,
-  //     username: userData?.username,
-  //   },
-  // });
+  const {
+    handleSubmit,
+    register,
+    formState: { isValid },
+    reset,
+  } = useForm<z.infer<typeof UpdateProfileSchema>>({
+    resolver: zodResolver(UpdateProfileSchema),
+    defaultValues: {
+      name: userData?.name,
+      username: userData?.username,
+      image: userData?.image || null,
+    },
+  });
 
   useEffect(() => {
     const fetchUserData = async () => {
-      const { user, ok, message } = await getUserByEmail(
-        session.data?.user?.email!,
-      );
+      const { user, ok, message } = await getUserByEmail(session?.user?.email!);
       if (ok && user) {
         setUserData(user);
+        reset({
+          name: user.name,
+          username: user.username,
+          image: user.image || null,
+        });
       }
     };
     fetchUserData();
 
     if (!file) {
       const t = window.setTimeout(() => setPreview(null), 0);
-
       return () => clearTimeout(t);
     }
 
     const url = URL.createObjectURL(file);
-
     const t = window.setTimeout(() => setPreview(url), 0);
 
     return () => {
       clearTimeout(t);
       URL.revokeObjectURL(url);
     };
-  }, [file]);
+  }, [file, userData]);
 
   const onSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
@@ -145,6 +110,23 @@ const PersonalInfo = () => {
     if (inputRef.current) inputRef.current.value = "";
   };
 
+  const onSubmit = (data: z.infer<typeof UpdateProfileSchema>) => {
+    console.log(data);
+  };
+
+  // const onSubmit = async (data: FormInputs) => {
+  //   const { remember, ...address } = data;
+  //   setAddress(address);
+
+  //   if (remember) {
+  //     await setUserAddress(address, session!.user.id);
+  //   } else {
+  //     await deleteUserAddress(session!.user.id);
+  //   }
+
+  //   router.push('/checkout');
+  // }
+
   return (
     <div className="grid grid-cols-1 gap-10 lg:grid-cols-3">
       {/* Vertical Tabs List */}
@@ -157,7 +139,7 @@ const PersonalInfo = () => {
 
       {/* Content */}
       <div className="space-y-6 lg:col-span-2">
-        <form className="mx-auto">
+        <form className="mx-auto" onSubmit={handleSubmit(onSubmit)}>
           <div className="mb-6 w-full space-y-2">
             <Label>Your Avatar</Label>
             <div className="flex items-center gap-4">
@@ -219,96 +201,101 @@ const PersonalInfo = () => {
               </div>
             </div>
             <p className="text-muted-foreground text-sm">
-              Pick a photo up to 1MB.
+              Pick a photo up to 2MB.
             </p>
           </div>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-1">
+            <div className="flex flex-col items-start gap-2 w-full">
+              <Label htmlFor="multi-step-personal-info-mobile">
+                Email
+                <Badge
+                  variant={userData?.emailVerified ? "default" : "destructive"}
+                >
+                  {userData?.emailVerified ? (
+                    <IconCircleDashedCheck className="size-5" />
+                  ) : (
+                    <IconShieldExclamation className="size-5" />
+                  )}
+                  {userData?.emailVerified ? "Verified" : "Not Verified"}
+                </Badge>
+              </Label>
+
+              <div className="relative w-full">
+                <Input
+                  id="multi-step-personal-info-mobile"
+                  type="email"
+                  placeholder="[EMAIL_ADDRESS]"
+                  value={userData?.email}
+                  disabled
+                />
+                <div className="text-muted-foreground pointer-events-none absolute inset-y-0 right-0 flex items-center justify-center pr-3 peer-disabled:opacity-50">
+                  <IconMail className="size-4" />
+                  <span className="sr-only">Email</span>
+                </div>
+              </div>
+              {userData?.emailVerified ? (
+                <Item variant="muted" size="sm">
+                  <ItemMedia>
+                    <IconCircleDashedCheck
+                      color="var(--chart-4)"
+                      className="size-5"
+                    />
+                  </ItemMedia>
+                  <ItemContent>
+                    <ItemTitle className="text-[var(--chart-4)]">
+                      Your profile has been verified.
+                    </ItemTitle>
+                  </ItemContent>
+                </Item>
+              ) : (
+                <Item variant="muted" size="sm">
+                  <ItemMedia variant="icon">
+                    <IconShieldExclamation color="var(--destructive)" />
+                  </ItemMedia>
+                  <ItemContent>
+                    <ItemTitle>Action required</ItemTitle>
+                    <ItemDescription>
+                      Your email is not verified. Please verify your email to
+                      continue.
+                    </ItemDescription>
+                  </ItemContent>
+                  <ItemActions>
+                    <Button size="sm" variant="outline" color="var(--chart-4)">
+                      Verify email
+                    </Button>
+                  </ItemActions>
+                </Item>
+              )}
+            </div>
             <div className="flex flex-col items-start gap-2">
               <Label htmlFor="multi-step-personal-info-first-name">
-                First Name
+                Your name
               </Label>
               <Input
                 id="multi-step-personal-info-first-name"
-                placeholder="John"
+                placeholder="Enter your name"
+                {...register("name", { required: true })}
               />
             </div>
             <div className="flex flex-col items-start gap-2">
               <Label htmlFor="multi-step-personal-info-last-name">
-                Last Name
+                Username
               </Label>
               <Input
                 id="multi-step-personal-info-last-name"
-                placeholder="Doe"
+                placeholder="ej: bet-seller"
+                {...register("username", { required: true })}
               />
-            </div>
-            <div className="flex flex-col items-start gap-2">
-              <Label htmlFor="multi-step-personal-info-mobile">Mobile</Label>
-              <Input
-                id="multi-step-personal-info-mobile"
-                type="tel"
-                placeholder="+1 (555) 123-4567"
-              />
-            </div>
-            <div className="flex flex-col items-start gap-2">
-              <Label htmlFor="country">Country</Label>
-              <Select>
-                <SelectTrigger
-                  id="country"
-                  className="[&>span_svg]:text-muted-foreground/80 w-full [&>span]:flex [&>span]:items-center [&>span]:gap-2 [&>span_svg]:shrink-0"
-                >
-                  <SelectValue placeholder="Select country" />
-                </SelectTrigger>
-                <SelectContent className="[&_*[role=option]>span>svg]:text-muted-foreground/80 max-h-100 [&_*[role=option]]:pr-8 [&_*[role=option]]:pl-2 [&_*[role=option]>span]:right-2 [&_*[role=option]>span]:left-auto [&_*[role=option]>span]:flex [&_*[role=option]>span]:items-center [&_*[role=option]>span]:gap-2 [&_*[role=option]>span>svg]:shrink-0">
-                  {countries.map((country) => (
-                    <SelectItem key={country.value} value={country.value}>
-                      <img
-                        src={country.flag}
-                        alt={`${country.label} flag`}
-                        className="h-4 w-5"
-                      />{" "}
-                      <span className="truncate">{country.label}</span>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="gender">Gender</Label>
-              <Select>
-                <SelectTrigger id="gender" className="w-full">
-                  <SelectValue placeholder="Select a gender" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectItem value="male">Male</SelectItem>
-                    <SelectItem value="female">Female</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="role">Role</Label>
-              <Select>
-                <SelectTrigger id="role" className="w-full">
-                  <SelectValue placeholder="Select a role" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectItem value="admin">Admin</SelectItem>
-                    <SelectItem value="user">User</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
+              <p className="text-muted-foreground text-sm">
+                The username must be unique.
+              </p>
             </div>
           </div>
         </form>
         <div className="flex justify-end">
           <Button type="submit" className="max-sm:w-full">
-            Save Changes
+            Save personal info
           </Button>
         </div>
       </div>

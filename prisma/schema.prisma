@@ -5,7 +5,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  url      = env("POSTGRES_URL")
+  url      = env("POSTGRES_URL_NON_POOLING")
 }
 
 datasource db {
@@ -19,6 +19,7 @@ model User {
   email         String    @unique
   emailVerified DateTime?
   image         String?
+  imageVersion  Int       @default(0)
   coins         Int       @default(4000)
   coinsPending  Int       @default(0)
   level         Int       @default(0)
