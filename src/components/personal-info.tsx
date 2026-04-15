@@ -13,10 +13,11 @@ import {
   IconShieldExclamation,
   IconTrash,
   IconUpload,
+  IconUser,
 } from "@tabler/icons-react";
 import { useSession } from "next-auth/react";
 import { IUser } from "@/app/interfaces/user.interface";
-import { getUserByEmail, updateUser } from "@/actions";
+import { getUserByEmail, getUserByUsername, updateUser } from "@/actions";
 import type { z } from "zod";
 import { UpdateProfileSchema } from "@/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -31,6 +32,12 @@ import {
 } from "./ui/item";
 import { Badge } from "./ui/badge";
 import { toast } from "sonner";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+} from "@/components/ui/input-group";
 
 const PersonalInfo = () => {
   const { data: session } = useSession({
@@ -47,6 +54,7 @@ const PersonalInfo = () => {
     register,
     formState: { isValid, errors },
     reset,
+    getValues,
   } = useForm<z.infer<typeof UpdateProfileSchema>>({
     resolver: zodResolver(UpdateProfileSchema),
     defaultValues: {
@@ -120,7 +128,6 @@ const PersonalInfo = () => {
 
   const onSubmit = async (data: z.infer<typeof UpdateProfileSchema>) => {
     setLoading(true);
-    console.log(data);
     //TODO: Si se ha subido una imagen nueva, llamar a upload image
     const newUser: IUser = {
       ...userData!,
@@ -129,11 +136,25 @@ const PersonalInfo = () => {
       image: data.image ?? null,
     };
     const { ok, message } = await updateUser(newUser);
-    console.log({ ok, message });
     if (ok) {
       toast.success("User updated successfully");
     } else {
       toast.error(message);
+    }
+    setLoading(false);
+  };
+
+  const checkUsername = async (username: string) => {
+    setLoading(true);
+    const { ok, user, message } = await getUserByUsername(username);
+    if (!ok) {
+      toast.error(message);
+    } else {
+      if (user && user?.id !== userData?.id) {
+        toast.error("Username is already taken");
+      } else {
+        toast.success("Username is available");
+      }
     }
     setLoading(false);
   };
@@ -298,11 +319,25 @@ const PersonalInfo = () => {
               <Label htmlFor="multi-step-personal-info-last-name">
                 Username
               </Label>
-              <Input
-                id="multi-step-personal-info-last-name"
-                placeholder="ej: bet-seller"
-                {...register("username")}
-              />
+              <InputGroup>
+                <InputGroupAddon align="inline-start">
+                  <IconUser />
+                </InputGroupAddon>
+                <InputGroupInput
+                  id="multi-step-personal-info-last-name"
+                  placeholder="ej: bet-seller"
+                  {...register("username")}
+                />
+                <InputGroupAddon align="inline-end">
+                  <InputGroupButton
+                    onClick={() => checkUsername(getValues("username"))}
+                    variant="secondary"
+                  >
+                    Check
+                  </InputGroupButton>
+                </InputGroupAddon>
+              </InputGroup>
+
               {errors.username && (
                 <p className="text-sm font-medium text-destructive">
                   {errors.username.message}

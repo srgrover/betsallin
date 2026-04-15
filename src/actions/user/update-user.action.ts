@@ -31,7 +31,11 @@ export const updateUser = async (user: IUser) => {
     };
   }
 
-  const { ok: okRole, role, message: messageRole } = await getRoleByEmail(userSession.email!);
+  const {
+    ok: okRole,
+    role,
+    message: messageRole,
+  } = await getRoleByEmail(userSession.email!);
 
   if (!okRole) {
     return {
@@ -72,7 +76,12 @@ async function validateUser(user: IUser) {
       message: "There is no username to create.",
     };
   } else {
-    const { user: userDb, ok, message } = await getUserByUsername(user.username);
+    const {
+      user: userDb,
+      ok,
+      message,
+    } = await getUserByUsername(user.username);
+    console.log("userDb", userDb, "ok", ok, "message", message);
     if (!ok) {
       return {
         ok: false,
@@ -80,7 +89,7 @@ async function validateUser(user: IUser) {
       };
     }
 
-    if (user && user.id !== userDb!.id) {
+    if (userDb && user.id !== userDb!.id) {
       return {
         ok: false,
         message: "Username already exists.",
