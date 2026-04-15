@@ -8,6 +8,7 @@ import {
   IconChevronCompactRight,
   IconCircleDashedCheck,
   IconImageGeneration,
+  IconLoader2,
   IconMail,
   IconShieldExclamation,
   IconTrash,
@@ -15,7 +16,7 @@ import {
 } from "@tabler/icons-react";
 import { useSession } from "next-auth/react";
 import { IUser } from "@/app/interfaces/user.interface";
-import { getUserByEmail } from "@/actions";
+import { getUserByEmail, updateUser } from "@/actions";
 import type { z } from "zod";
 import { UpdateProfileSchema } from "@/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -29,6 +30,7 @@ import {
   ItemTitle,
 } from "./ui/item";
 import { Badge } from "./ui/badge";
+import { toast } from "sonner";
 
 const PersonalInfo = () => {
   const { data: session } = useSession({
@@ -38,11 +40,12 @@ const PersonalInfo = () => {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [userData, setUserData] = useState<IUser | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const {
     handleSubmit,
     register,
-    formState: { isValid },
+    formState: { isValid, errors },
     reset,
   } = useForm<z.infer<typeof UpdateProfileSchema>>({
     resolver: zodResolver(UpdateProfileSchema),
@@ -54,8 +57,10 @@ const PersonalInfo = () => {
   });
 
   useEffect(() => {
+    setLoading(true);
     const fetchUserData = async () => {
-      const { user, ok, message } = await getUserByEmail(session?.user?.email!);
+      if (!session?.user?.email) return;
+      const { user, ok, message } = await getUserByEmail(session.user.email);
       if (ok && user) {
         setUserData(user);
         reset({
@@ -66,7 +71,10 @@ const PersonalInfo = () => {
       }
     };
     fetchUserData();
+    setLoading(false);
+  }, [session?.user?.email, reset]);
 
+  useEffect(() => {
     if (!file) {
       const t = window.setTimeout(() => setPreview(null), 0);
       return () => clearTimeout(t);
@@ -79,7 +87,7 @@ const PersonalInfo = () => {
       clearTimeout(t);
       URL.revokeObjectURL(url);
     };
-  }, [file, userData]);
+  }, [file]);
 
   const onSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
@@ -110,22 +118,25 @@ const PersonalInfo = () => {
     if (inputRef.current) inputRef.current.value = "";
   };
 
-  const onSubmit = (data: z.infer<typeof UpdateProfileSchema>) => {
+  const onSubmit = async (data: z.infer<typeof UpdateProfileSchema>) => {
+    setLoading(true);
     console.log(data);
+    //TODO: Si se ha subido una imagen nueva, llamar a upload image
+    const newUser: IUser = {
+      ...userData!,
+      name: data.name,
+      username: data.username,
+      image: data.image ?? null,
+    };
+    const { ok, message } = await updateUser(newUser);
+    console.log({ ok, message });
+    if (ok) {
+      toast.success("User updated successfully");
+    } else {
+      toast.error(message);
+    }
+    setLoading(false);
   };
-
-  // const onSubmit = async (data: FormInputs) => {
-  //   const { remember, ...address } = data;
-  //   setAddress(address);
-
-  //   if (remember) {
-  //     await setUserAddress(address, session!.user.id);
-  //   } else {
-  //     await deleteUserAddress(session!.user.id);
-  //   }
-
-  //   router.push('/checkout');
-  // }
 
   return (
     <div className="grid grid-cols-1 gap-10 lg:grid-cols-3">
@@ -226,7 +237,7 @@ const PersonalInfo = () => {
                   id="multi-step-personal-info-mobile"
                   type="email"
                   placeholder="[EMAIL_ADDRESS]"
-                  value={userData?.email}
+                  value={userData?.email || ""}
                   disabled
                 />
                 <div className="text-muted-foreground pointer-events-none absolute inset-y-0 right-0 flex items-center justify-center pr-3 peer-disabled:opacity-50">
@@ -275,8 +286,13 @@ const PersonalInfo = () => {
               <Input
                 id="multi-step-personal-info-first-name"
                 placeholder="Enter your name"
-                {...register("name", { required: true })}
+                {...register("name")}
               />
+              {errors.name && (
+                <p className="text-sm font-medium text-destructive">
+                  {errors.name.message}
+                </p>
+              )}
             </div>
             <div className="flex flex-col items-start gap-2">
               <Label htmlFor="multi-step-personal-info-last-name">
@@ -285,8 +301,13 @@ const PersonalInfo = () => {
               <Input
                 id="multi-step-personal-info-last-name"
                 placeholder="ej: bet-seller"
-                {...register("username", { required: true })}
+                {...register("username")}
               />
+              {errors.username && (
+                <p className="text-sm font-medium text-destructive">
+                  {errors.username.message}
+                </p>
+              )}
               <p className="text-muted-foreground text-sm">
                 The username must be unique.
               </p>
@@ -294,7 +315,13 @@ const PersonalInfo = () => {
           </div>
         </form>
         <div className="flex justify-end">
-          <Button type="submit" className="max-sm:w-full">
+          <Button
+            type="button"
+            onClick={handleSubmit(onSubmit)}
+            className="max-sm:w-full"
+            disabled={!isValid || loading}
+          >
+            {loading && <IconLoader2 className="size-5 animate-spin" />}
             Save personal info
           </Button>
         </div>

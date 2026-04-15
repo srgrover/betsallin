@@ -9,6 +9,7 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { getUserByEmail } from "@/actions";
 import { IUser } from "./interfaces/user.interface";
+import { Toaster } from "@/components/ui/sonner";
 
 const raleway = Raleway({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -45,6 +46,7 @@ export default async function RootLayout({
               <main className="min-h-screen flex flex-1">
                 <AppSidebar user={userData!} />
                 <div className="w-full flex-1 overflow-y-auto">{children}</div>
+                <Toaster />
               </main>
             </SidebarProvider>
           </TooltipProvider>

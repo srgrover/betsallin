@@ -91,10 +91,9 @@ export const UpdateProfileSchema = z.object({
   username: z
     .string()
     .min(3, { message: "Username must be at least 3 characters long." })
-    .max(15, { message: "Username must be less than 15 characters." })
-    .regex(/^[a-zA-Z0-9_-]*$/, {
-      message:
-        "Username must not contain any blank spaces or special characters.",
+    .max(25, { message: "Username must be less than 25 characters." })
+    .regex(/^[a-zA-Z0-9_.-]*$/, {
+      message: "Username must not contain any blank spaces.",
     }),
   image: z.string().optional().nullable(),
 });

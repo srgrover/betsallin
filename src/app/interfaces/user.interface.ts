@@ -11,4 +11,5 @@ export interface IUser {
   coinsPending: number;
   createdAt: Date;
   updatedAt: Date;
+  role: string;
 }
