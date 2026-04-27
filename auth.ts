@@ -20,9 +20,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   session: { strategy: "jwt" },
   callbacks: {
     async signIn({ user, account, profile }) {
-      console.log("user", user);
-      console.log("account", account);
-      console.log("profile", profile);
       if (!user.email) return false;
 
       try {
@@ -53,12 +50,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             // En el primer login el objeto 'user' viene lleno
             // Puedes pasar datos al token para que estén disponibles en la sesión
             token.id = responseUser.user.id;
+            token.role = responseUser.user.role;
           }
         } catch (error) {
           console.error("Error adding id to token: ", error);
         }
       }
-      if (trigger === "update") token.name = session.user.name;
+      if (trigger === "update") {
+        if (session?.user?.name) token.name = session.user.name;
+        if (session?.user?.image) token.picture = session.user.image;
+      }
       if (account?.provider === "keycloak") {
         return { ...token, accessToken: account.access_token };
       }
@@ -70,6 +71,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         session.user.id = token.id as string;
       }
       if (token?.accessToken) session.accessToken = token.accessToken as string;
+      if (session?.user && token.role) {
+        session.user.role = token.role as string;
+      }
 
       return session;
     },
@@ -83,6 +87,7 @@ declare module "next-auth" {
       name?: string | null;
       email?: string | null;
       image?: string | null;
+      role?: string | null;
     };
     accessToken?: string;
   }

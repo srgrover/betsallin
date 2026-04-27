@@ -4,8 +4,8 @@ import { createClient } from "@supabase/supabase-js";
 import { auth } from "@auth";
 
 const supabase = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!, // SOLO server
+  process.env.NEXT_PUBLIC_POSTGRES_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_POSTGRES_SUPABASE_ANON_KEY!, // SOLO server
 );
 
 const MAX_SIZE = 2 * 1024 * 1024;
@@ -39,7 +39,7 @@ async function getUserIdOrThrow(): Promise<{
   };
 }
 
-export async function updateProfileAction(_: unknown, formData: FormData) {
+export async function uploadImage(_: unknown, formData: FormData) {
   const { ok, id, message } = await getUserIdOrThrow();
 
   if (!ok) {
@@ -51,6 +51,7 @@ export async function updateProfileAction(_: unknown, formData: FormData) {
 
   const image = formData.get("image");
   let imagePath: string | undefined;
+  let imageUrl: string | undefined;
 
   if (image != null && String(image) !== "") {
     assertFile(image);
@@ -68,13 +69,12 @@ export async function updateProfileAction(_: unknown, formData: FormData) {
       };
     }
 
-    const ext = extFromMime(image.type);
-
-    imagePath = `avatars/${id}.${ext}`;
+    // Store the image with no extension so that we can always overwrite it regardless of format
+    imagePath = `${id}`;
 
     const bytes = new Uint8Array(await image.arrayBuffer());
     const { error } = await supabase.storage
-      .from("public")
+      .from("avatars")
       .upload(imagePath, bytes, {
         upsert: true,
         contentType: image.type,
@@ -87,11 +87,15 @@ export async function updateProfileAction(_: unknown, formData: FormData) {
         message: error.message,
       };
     }
+
+    const { data } = supabase.storage.from("avatars").getPublicUrl(imagePath);
+    imageUrl = `${data.publicUrl}?t=${Date.now()}`;
   }
 
   return {
     ok: true,
     imagePath,
+    imageUrl,
     imageVersion: { increment: 1 },
   };
 }

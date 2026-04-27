@@ -21,8 +21,12 @@ import {
   IconUsers,
 } from "@tabler/icons-react";
 import { auth } from "@auth";
-import { getUserByEmail } from "@/actions";
+import { getUserByUsername } from "@/actions";
 import Link from "next/link";
+import { IUser } from "../interfaces/user.interface";
+import { toast } from "sonner";
+import { notFound, redirect } from "next/navigation";
+import { getUserById } from "@/actions/user/get-user-by-id.action";
 
 const permissions = [
   {
@@ -65,15 +69,47 @@ const permissions = [
   },
 ];
 
-export default async function UserPermissions() {
-  //TODO: Pedir tambien username por parametro url para hacer la busqueda en la base de datos
+export default async function ProfilePage({ searchParams }: { searchParams?: { u?: string } }) {
+
   const session = await auth();
+  if (!session) {
+    redirect("/login");
+  }
   const userSession = session?.user;
 
-  const { user, ok, message } = await getUserByEmail(userSession?.email!);
+  console.log("userSession", userSession);
 
-  if (!ok) {
-    return <div>{message}</div>;
+  const params = await searchParams;
+  const usernameParam = params?.u;
+  console.log("usernameParam", usernameParam);
+
+  let user: IUser | null = null;
+
+  if (usernameParam) {
+    const { user: userFound, ok, message } = await getUserByUsername(usernameParam!);
+    if (!ok) {
+      toast.error(message, {
+        position: "top-right",
+        richColors: true,
+      });
+    }
+    console.log("user", user);
+
+    if (!userFound) {
+      notFound();
+    }
+    user = userFound as IUser;
+  } else {
+    console.log("usernameParam", usernameParam);
+
+    const { user: userFound, ok, message } = await getUserById(userSession?.id!);
+    if (!ok) {
+      toast.error(message, {
+        position: "top-right",
+        richColors: true,
+      });
+    }
+    user = userFound as IUser;
   }
 
   return (
@@ -106,7 +142,17 @@ export default async function UserPermissions() {
               </p>
             </div>
           </div>
-          {userSession!.id === user!.id ? (
+          {
+            userSession?.role === 'ADMIN' && userSession.id !== user?.id && (
+              <Link href={`/profile/edit?u=${user?.username}`}>
+                <Button>
+                  <IconPencil className="mr-2 size-4" />
+                  Edit
+                </Button>
+              </Link>
+            )
+          }
+          {userSession && user && userSession.id === user?.id ? (
             <Link href="/profile/edit">
               <Button>
                 <IconPencil className="mr-2 size-4" />

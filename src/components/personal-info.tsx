@@ -17,7 +17,7 @@ import {
 } from "@tabler/icons-react";
 import { useSession } from "next-auth/react";
 import { IUser } from "@/app/interfaces/user.interface";
-import { getUserByEmail, getUserByUsername, updateUser } from "@/actions";
+import { getUserByEmail, getUserByUsername, updateUser, uploadImage } from "@/actions";
 import type { z } from "zod";
 import { UpdateProfileSchema } from "@/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -103,14 +103,20 @@ const PersonalInfo = () => {
     if (!f) return;
 
     if (!f.type.startsWith("image/")) {
-      window.alert("Please select an image file");
+      toast.error("Please select an image file", {
+        position: "top-right",
+        richColors: true,
+      });
       e.currentTarget.value = "";
 
       return;
     }
 
     if (f.size > 1024 * 1024) {
-      window.alert("File must be smaller than 1MB");
+      toast.error("File must be smaller than 1MB", {
+        position: "top-right",
+        richColors: true,
+      });
       e.currentTarget.value = "";
 
       return;
@@ -128,32 +134,72 @@ const PersonalInfo = () => {
 
   const onSubmit = async (data: z.infer<typeof UpdateProfileSchema>) => {
     setLoading(true);
-    //TODO: Si se ha subido una imagen nueva, llamar a upload image
+    let newImageUrl = data.image ?? null;
+
+    if (file) {
+      const formData = new FormData();
+      formData.append("image", file);
+      const { ok, message, imageUrl } = await uploadImage(null, formData);
+      if (ok) {
+        if (imageUrl) newImageUrl = imageUrl;
+      } else {
+        toast.error(message, {
+          position: "top-right",
+          richColors: true,
+        });
+        setLoading(false);
+        return;
+      }
+    }
     const newUser: IUser = {
       ...userData!,
       name: data.name,
       username: data.username,
-      image: data.image ?? null,
+      image: newImageUrl,
     };
+
     const { ok, message } = await updateUser(newUser);
     if (ok) {
-      toast.success("User updated successfully");
+      toast.success("User updated successfully", {
+        position: "top-right",
+        richColors: true,
+      });
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
     } else {
-      toast.error(message);
+      toast.error(message, {
+        position: "top-right",
+        richColors: true,
+      });
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const checkUsername = async (username: string) => {
+    if (userData?.username === username) {
+      toast.info("This is your current username", {
+        position: "top-right",
+        richColors: true,
+      });
+      return;
+    }
+
     setLoading(true);
     const { ok, user, message } = await getUserByUsername(username);
     if (!ok) {
       toast.error(message);
     } else {
       if (user && user?.id !== userData?.id) {
-        toast.error("Username is already taken");
+        toast.error("Username is already taken", {
+          position: "top-right",
+          richColors: true,
+        });
       } else {
-        toast.success("Username is available");
+        toast.success("Username is available", {
+          position: "top-right",
+          richColors: true,
+        });
       }
     }
     setLoading(false);

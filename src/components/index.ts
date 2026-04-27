@@ -21,3 +21,5 @@ export * from "./ui/separator";
 export * from "./ui/slider";
 export * from "./ui/switch";
 export * from "./ui/textarea";
+export * from "./ui/empty";
+export * from "./ui/avatar";

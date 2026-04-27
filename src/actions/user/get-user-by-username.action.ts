@@ -1,5 +1,6 @@
 "use server";
 
+import { IUser } from "@/app/interfaces/user.interface";
 import { prisma } from "@/lib";
 
 export const getUserByUsername = async (username: string) => {
@@ -16,6 +17,6 @@ export const getUserByUsername = async (username: string) => {
 
   return {
     ok: true,
-    user,
+    user: user as IUser,
   };
 };
