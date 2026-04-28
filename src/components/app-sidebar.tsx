@@ -28,6 +28,7 @@ import {
   IconBallTennis,
   IconBallBasketball,
   IconLogin,
+  IconUser,
 } from "@tabler/icons-react";
 
 import { User } from "next-auth";
@@ -58,21 +59,21 @@ const data = {
       ],
     },
     {
-      title: "Models",
-      url: "#",
-      icon: <IconRobot />,
+      title: "Users",
+      url: "/users",
+      icon: <IconUser />,
       items: [
         {
-          title: "Genesis",
-          url: "#",
+          title: "Friends",
+          url: "/users/friends",
         },
         {
-          title: "Explorer",
-          url: "#",
+          title: "All users",
+          url: "/users/all",
         },
         {
-          title: "Quantum",
-          url: "#",
+          title: "Ranking",
+          url: "/users/ranking",
         },
       ],
     },

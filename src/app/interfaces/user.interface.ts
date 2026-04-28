@@ -1,3 +1,5 @@
+import { IFollow } from "./follow.interface";
+
 export interface IUser {
   id: string;
   name: string;
@@ -12,4 +14,6 @@ export interface IUser {
   createdAt: Date;
   updatedAt: Date;
   role: string;
+  followers?: IFollow[];
+  following?: IFollow[];
 }

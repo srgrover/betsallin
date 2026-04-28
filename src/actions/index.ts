@@ -6,6 +6,10 @@ export * from "./user/update-user.action";
 export * from "./user/get-role-by-email.action";
 export * from "./user/update-user-role.action";
 export * from "./user/upload-image.action";
+export * from "./user/get-users.action";
+export * from "./user/follow-user.action";
+export * from "./user/unfollow-user.action";
+
 // export * from './user/get-user-by-id.action';
 
 // Auth actions
