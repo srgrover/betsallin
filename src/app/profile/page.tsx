@@ -15,18 +15,19 @@ import {
   IconBuildingBridge2,
   IconDatabase,
   IconPencil,
+  IconPlus,
   IconSettings,
   IconStarFilled,
-  IconUser,
   IconUsers,
 } from "@tabler/icons-react";
 import { auth } from "@auth";
-import { getUserByUsername } from "@/actions";
+import { followUser, getUserByUsername, unfollowUser } from "@/actions";
 import Link from "next/link";
 import { IUser } from "../interfaces/user.interface";
 import { toast } from "sonner";
 import { notFound, redirect } from "next/navigation";
 import { getUserById } from "@/actions/user/get-user-by-id.action";
+import { FollowButton } from "@/components";
 
 const permissions = [
   {
@@ -70,18 +71,22 @@ const permissions = [
 ];
 
 export default async function ProfilePage({ searchParams }: { searchParams?: { u?: string } }) {
-
   const session = await auth();
   if (!session) {
     redirect("/login");
   }
   const userSession = session?.user;
 
-  console.log("userSession", userSession);
+  const { user: userSessionDb, ok, message } = await getUserById(userSession?.id!);
+  if (!ok) {
+    toast.error(message, {
+      position: "top-right",
+      richColors: true,
+    });
+  }
 
   const params = await searchParams;
   const usernameParam = params?.u;
-  console.log("usernameParam", usernameParam);
 
   let user: IUser | null = null;
 
@@ -93,24 +98,15 @@ export default async function ProfilePage({ searchParams }: { searchParams?: { u
         richColors: true,
       });
     }
-    console.log("user", user);
 
     if (!userFound) {
       notFound();
     }
     user = userFound as IUser;
   } else {
-    console.log("usernameParam", usernameParam);
-
-    const { user: userFound, ok, message } = await getUserById(userSession?.id!);
-    if (!ok) {
-      toast.error(message, {
-        position: "top-right",
-        richColors: true,
-      });
-    }
-    user = userFound as IUser;
+    user = userSessionDb as IUser;
   }
+
 
   return (
     <div className="container mx-auto px-4 py-6 md:px-6 2xl:max-w-[1400px]">
@@ -159,12 +155,26 @@ export default async function ProfilePage({ searchParams }: { searchParams?: { u
                 Edit Profile
               </Button>
             </Link>
-          ) : (
-            <Button variant="default">
-              <IconUser className="mr-2 size-4" />
-              Follow
-            </Button>
-          )}
+          ) :
+
+            userSessionDb!.following?.some((f) => f.followingId === user?.id) ? (
+              <FollowButton
+                text="Following"
+                userId={userSession?.id!}
+                followingId={user?.id!}
+                variant="secondary"
+                handleMethod={unfollowUser}
+              />
+            ) : (
+              <FollowButton
+                text="Follow"
+                userId={userSession?.id!}
+                followingId={user?.id!}
+                variant="outline"
+                handleMethod={followUser}
+              />
+            )
+          }
         </div>
 
         {/* Role Selector */}

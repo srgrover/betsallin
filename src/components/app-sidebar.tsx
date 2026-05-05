@@ -161,6 +161,11 @@ const data = {
       url: "/login",
       icon: <IconLogin />,
     },
+    {
+      title: "Sign Up",
+      url: "/register",
+      icon: <IconUser />,
+    },
   ],
 };
 

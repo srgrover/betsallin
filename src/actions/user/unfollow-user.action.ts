@@ -21,6 +21,7 @@ export const unfollowUser = async (followerId: string, followingId: string) => {
   });
 
   revalidatePath("/users");
+  revalidatePath(`/profile`);
 
 
   return {

@@ -17,7 +17,7 @@ export const createUser = async (user: User) => {
       name: user.name,
       image: user.image,
       username: user.email!.split("@")[0],
-      //   password: ''
+      //password: user.password
     },
   });
 

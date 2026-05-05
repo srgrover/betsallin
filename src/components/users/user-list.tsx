@@ -1,10 +1,12 @@
 'use client'
+
 import {
     Avatar,
     AvatarFallback,
     AvatarImage,
 } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
+import { Spinner } from "@/components/ui/spinner"
 import {
     Item,
     ItemActions,
@@ -14,49 +16,63 @@ import {
     ItemMedia,
     ItemTitle,
 } from "@/components/ui/item"
-import { IconPlus, IconTrash } from "@tabler/icons-react"
 import { IUser } from "@/app/interfaces/user.interface";
 import Link from "next/link";
 import { followUser, unfollowUser } from "@/actions";
 import { toast } from "sonner";
+import { useState } from "react"
 
 interface Props {
     users: IUser[];
     cols?: number;
-    sessionId: string;
+    user: IUser;
 }
 
-export function UserList({ users, cols = 1, sessionId }: Props) {
-    const handleFollow = async (followingId: string) => {
-        const { ok, message } = await followUser(sessionId, followingId);
+export function UserList({ users, cols = 1, user }: Props) {
+    const [loadingId, setLoadingId] = useState<string | null>(null);
+
+    const handleFollow = async (followingId: string): Promise<void> => {
+        setLoadingId(followingId);
+        const { ok, message } = await followUser(user.id!, followingId);
 
         if (!ok) {
             toast.error(message, {
                 position: "top-right",
                 richColors: true,
             });
+            setLoadingId(null);
             return;
         }
 
-        users.find((user) => user.id === followingId)?.followers?.push({
-            followerId: sessionId,
-            followingId: followingId,
-            createdAt: new Date()
-        });
+        const foundUser = users.find((u) => u.id === followingId);
+        if (foundUser && foundUser.followers) {
+            foundUser.followers.push({
+                followerId: user.id!,
+                followingId: followingId,
+                createdAt: new Date()
+            });
+        }
+        setLoadingId(null);
     }
 
-    const handleUnfollow = async (followingId: string) => {
-        const { ok, message } = await unfollowUser(sessionId, followingId);
+    const handleUnfollow = async (followingId: string): Promise<void> => {
+        setLoadingId(followingId);
+        const { ok, message } = await unfollowUser(user.id!, followingId);
 
         if (!ok) {
             toast.error(message, {
                 position: "top-right",
                 richColors: true,
             });
+            setLoadingId(null);
             return;
         }
 
-        users.find((user) => user.id === followingId)?.followers?.filter((follower) => follower.followerId !== sessionId);
+        const foundUser = users.find((u) => u.id === followingId);
+        if (foundUser && foundUser.followers) {
+            foundUser.followers = foundUser.followers.filter((follower) => follower.followerId !== user.id!);
+        }
+        setLoadingId(null);
     }
 
     return (
@@ -77,20 +93,29 @@ export function UserList({ users, cols = 1, sessionId }: Props) {
                                 {person.username}
                             </Link>
                         </ItemTitle>
-                        <ItemDescription>{person.email}</ItemDescription>
+                        <ItemDescription className="flex gap-2 items-center">
+                            <span className="bg-muted px-2 py-0.5 text-xs rounded-full">Level {person.level}</span>
+                            <span className="bg-muted px-2 py-0.5 text-xs rounded-full">{person.exp} xp</span>
+                        </ItemDescription>
                     </ItemContent>
                     <ItemActions>
                         {
-                            sessionId !== person.id && !person.followers?.some((follower) => follower.followerId === sessionId) && (
-                                <Button onClick={() => handleFollow(person.id)} variant="ghost" size="icon" className="rounded-full">
-                                    <IconPlus />
+                            user.id !== person.id && !user.following?.some((following) => following.followingId === person.id) && (
+                                <Button onClick={() => handleFollow(person.id)} variant="secondary" size="sm" disabled={loadingId === person.id}>
+                                    {
+                                        loadingId === person.id && <Spinner data-icon="inline-start" />
+                                    }
+                                    follow
                                 </Button>
                             )
                         }
                         {
-                            sessionId !== person.id && person.following?.some((following) => following.followingId === sessionId) && (
-                                <Button onClick={() => handleUnfollow(person.id)} variant="ghost" size="icon" className="rounded-full">
-                                    <IconTrash />
+                            user.id !== person.id && user.following?.some((f) => f.followingId === person.id) && (
+                                <Button onClick={() => handleUnfollow(person.id)} variant="destructive" size="sm" disabled={loadingId === person.id}>
+                                    {
+                                        loadingId === person.id && <Spinner data-icon="inline-start" />
+                                    }
+                                    unfollow
                                 </Button>
                             )
                         }

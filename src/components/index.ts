@@ -6,6 +6,7 @@ export * from "./users/user-list";
 export * from "./button-provier";
 export * from "./demo";
 export * from "./login-form";
+export * from "./follow-button";
 
 // Shadcn
 export * from "./ui/alert-dialog";
@@ -27,3 +28,4 @@ export * from "./ui/switch";
 export * from "./ui/textarea";
 export * from "./ui/empty";
 export * from "./ui/avatar";
+export * from "./ui/spinner";

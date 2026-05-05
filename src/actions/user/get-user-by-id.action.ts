@@ -13,6 +13,10 @@ export const getUserById = async (id: string) => {
 
     const userFound = await prisma.user.findUnique({
         where: { id },
+        include: {
+            following: true,
+            followers: true,
+        }
     });
 
     return {

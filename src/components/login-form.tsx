@@ -17,15 +17,16 @@ import {
 import { Input } from "@/components/ui/input"
 import { IconBrandGithubFilled, IconBrandGoogleFilled } from "@tabler/icons-react"
 import { ButtonProvider } from "./button-provier"
+import Link from "next/link"
 
 const providers = [
   {
-      provider: 'google',
-      icon: <IconBrandGoogleFilled size={20} />
+    provider: 'google',
+    icon: <IconBrandGoogleFilled size={20} />
   },
   {
-      provider: 'github',
-      icon: <IconBrandGithubFilled size={20} />
+    provider: 'github',
+    icon: <IconBrandGithubFilled size={20} />
   }
 ]
 
@@ -48,8 +49,8 @@ export function LoginForm({
               <Field>
                 {
                   providers.map((provider) => (
-                  <ButtonProvider provider={provider.provider} icon={provider.icon} />
-                ))}                
+                    <ButtonProvider provider={provider.provider} icon={provider.icon} />
+                  ))}
               </Field>
               <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
                 Or continue with
@@ -78,7 +79,7 @@ export function LoginForm({
               <Field>
                 <Button type="submit">Login</Button>
                 <FieldDescription className="text-center">
-                  Don&apos;t have an account? <a href="#">Sign up</a>
+                  Don&apos;t have an account? <Link href="/register">Sign up</Link>
                 </FieldDescription>
               </Field>
             </FieldGroup>

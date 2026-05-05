@@ -4,6 +4,8 @@ import { prisma } from "@/lib";
 import { revalidatePath } from "next/cache";
 
 export const followUser = async (followerId: string, followingId: string) => {
+  console.log("followerId", followerId);
+  console.log("followingId", followingId);
   if (!followerId || !followingId) {
     return {
       ok: false,
@@ -19,6 +21,7 @@ export const followUser = async (followerId: string, followingId: string) => {
   });
 
   revalidatePath("/users");
+  revalidatePath(`/profile`);
 
   return {
     ok: true,
